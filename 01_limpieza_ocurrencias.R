@@ -65,10 +65,19 @@ filtered_list <- thin(
   locs.thinned.list.return = TRUE,
   write.files = TRUE,
   out.dir = ".",
-  out.base = "cvenusus_clean",
+  out.base = "cvenusus_prueba",  #nombre de archivo de salida
   verbose = TRUE
 )
 
 # Extraer el data.frame con las ocurrencias filtradas
 filtered_data <- filtered_list[[1]]
 cat("Número de registros después de thinning:", nrow(filtered_data), "\n")
+
+
+## 7. Visualizar registros limpios
+occs_filtered_sf <- st_as_sf(filtered_data, coords = c("Longitude","Latitude"), crs = 4326)
+
+m1 <- mapview(occs_clean_sf, col.regions = "red", cex = 5, layer.name = "Ocurrencias limpias")
+m2 <- mapview(occs_filtered_sf, col.regions = "blue", cex = 7, layer.name = "Ocurrencias filtradas")
+
+m2+m1
