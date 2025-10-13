@@ -1,6 +1,6 @@
 ##############################################
 #  Verificación e instalación de paquetes
-#  Curso: Introducción a los Modelos Predictivos de Nicho y Distribución
+#  Curso: Modelado de Nicho y Distribución
 #  Autor: Juan Diego Pinotti
 ##############################################
 

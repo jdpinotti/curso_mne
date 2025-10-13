@@ -1,6 +1,6 @@
 ##############################################
 #  Descarga de capas climáticas CHELSA (Sudamérica)
-#  Curso: Introducción a los Modelos Predictivos de Nicho y Distribución
+#  Curso: Modelado de Nicho y Distribución
 #  Autor: Juan Diego Pinotti
 ##############################################
 
@@ -47,16 +47,3 @@ for (i in seq_along(urls)) {
 ## 5. Verificar descargas ----
 archivos_descargados <- list.files(dir_capas, pattern = "\\.tif$", full.names = TRUE)
 cat("Se descargaron", length(archivos_descargados), "archivos de", length(urls), "\n")
-
-## 6. Cargar las capas en R ----
-if (length(archivos_descargados) > 0) {
-  capas <- rast(archivos_descargados)
-  cat("Se cargaron", nlyr(capas), "capas climáticas.\n")
-  print(capas)
-  
-  # Verificar nombres
-  cat("\nNombres de las capas:\n")
-  print(names(capas))
-} else {
-  cat("No se pudieron cargar las capas. Revisa las descargas.\n")
-}

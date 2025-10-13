@@ -1,6 +1,6 @@
 ##############################################
 #  Limpieza y filtrado de ocurrencias
-#  Curso: Introducción a los Modelos Predictivos de Nicho y Distribución
+#  Curso: Modelado de Nicho y Distribución
 #  Autor: Juan Diego Pinotti
 ##############################################
 
@@ -65,7 +65,7 @@ filtered_list <- thin(
   locs.thinned.list.return = TRUE,
   write.files = TRUE,
   out.dir = ".",
-  out.base = "cvenusus_prueba",  #nombre de archivo de salida
+  out.base = "cvenustus_clean",  #nombre de archivo de salida
   verbose = TRUE
 )
 
