@@ -6,14 +6,17 @@
 
 # Lista COMPLETA de paquetes necesarios para todos los scripts
 paquetes_necesarios <- c(
-  # Para Script 01 (Limpieza de ocurrencias):
+  # Script 01 (Limpieza de ocurrencias)
   "CoordinateCleaner", "spThin", "dplyr", "sf", "mapview",
   
-  # Para Script 02 (Descarga de capas):
+  # Script 02 (Descarga de capas)
   "terra", "utils",
   
-  # Para Script 03 (Análisis PCA):
-  "ggplot2", "factoextra"
+  # Script 03 (PCA y correlaciones)
+  "ggplot2", "factoextra", "tidyr", "tibble",
+  
+  # Script 05 (Modelado con ENMeval)
+  "sp", "dismo", "ENMeval", "predicts"
 )
 
 # Función para verificar e instalar paquetes
