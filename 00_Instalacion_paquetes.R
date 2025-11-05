@@ -1,5 +1,5 @@
 ##############################################
-#  Verificación e instalación de paquetes
+#  Verificación e instalación de paquetes (scripts 1 a 6)
 #  Curso: Modelado de Nicho y Distribución
 #  Autor: Juan Diego Pinotti
 ##############################################
@@ -13,7 +13,7 @@ paquetes_necesarios <- c(
   "terra", "utils",
   
   # Script 03 (PCA y correlaciones)
-  "ggplot2", "factoextra", "tidyr", "tibble",
+  "ggplot2", "factoextra", "tidyr", "tibble", "corrplot", "usdm", 
   
   # Script 05 (Modelado con ENMeval)
   "sp", "dismo", "ENMeval", "predicts"
