@@ -4,7 +4,7 @@
 #  Autor: Juan Diego Pinotti
 ##############################################
 
-# Lista COMPLETA de paquetes necesarios para todos los scripts
+# Lista de paquetes necesarios para todos los scripts
 paquetes_necesarios <- c(
   # Script 01 (Limpieza de ocurrencias)
   "CoordinateCleaner", "spThin", "dplyr", "sf", "mapview",
@@ -16,10 +16,11 @@ paquetes_necesarios <- c(
   "ggplot2", "factoextra", "tidyr", "tibble", "corrplot", "usdm", 
   
   # Script 05 (Modelado con ENMeval)
-  "sp", "dismo", "ENMeval", "predicts"
+  "sp", "dismo", "ENMeval", "predicts", "pROC", "maxnet"
 )
 
 # Función para verificar e instalar paquetes
+
 verificar_paquetes <- function(paquetes) {
   for (paquete in paquetes) {
     if (!requireNamespace(paquete, quietly = TRUE)) {
