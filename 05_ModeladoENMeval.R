@@ -56,7 +56,7 @@ write.csv(bg_full, "background_cvenustus.csv", row.names = FALSE)
 
 ###### Modelo con las variables seleccionadas por PCA ######
 
-occs <- read.csv("var_amb_presencias.csv")
+occs <- read.csv("outputs/valores_presencias.csv")
 # Simplificar nombres
 nombres_finales <- c("sp", "long", "lat", 
                      "bio1", "bio2", "bio3", "bio4", "bio5", "bio6", "bio7", "bio8", "bio9",
