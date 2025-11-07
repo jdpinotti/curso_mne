@@ -14,7 +14,7 @@ library(ggplot2)
 setwd("/home/dargwind/Modelado de Nicho/curso_modelado/wd")
 
 # Definir la ruta de los archivos
-csv_path <- "cvenusus_clean_thin1.csv"
+csv_path <- "cvenustus_clean_thin1.csv"
 datos <- read.csv(csv_path)
 
 #################Generacion bg ##############################
