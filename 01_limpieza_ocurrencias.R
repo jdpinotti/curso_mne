@@ -15,8 +15,17 @@ library(mapview)            # Mapas interactivos
 # Definir el directorio de trabajo (ajustar si es necesario)
 setwd("/home/dargwind/Modelado de Nicho/curso_modelado/wd")
 
-# Nombre del archivo de ocurrencias
+# Descargar y guardar localmente
+url_presencias <- "https://raw.githubusercontent.com/jdpinotti/curso_mne/main/mvenustus/cvenustus_compilado.csv"
 csv_file <- "cvenustus_compilado.csv"
+
+if (!file.exists(csv_file)) {
+  download.file(url_presencias, destfile = csv_file, mode = "wb")
+  cat("Archivo descargado\n")
+}
+
+# Luego leer el archivo local
+occs_crudas <- read.csv(csv_file)   #pueden cambiar este archivo por sus ocurrencias propias
 
 # Nombres de columnas
 lat_col <- "latitude"
