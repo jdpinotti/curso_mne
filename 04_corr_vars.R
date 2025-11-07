@@ -22,7 +22,7 @@ names(capas)
 occs <- read.csv("cvenustus_clean_thin1.csv")
 
 # Extraer valores ambientales en los puntos
-valores <- terra::extract(capas, occs[, c("long", "lat")])
+valores <- terra::extract(capas, occs[, c("longitude", "latitude")])
 valores <- valores[,-1]  # quitar columna ID que agrega `extract`
 
 # Guardar tabla con presencias + valores ambientales
