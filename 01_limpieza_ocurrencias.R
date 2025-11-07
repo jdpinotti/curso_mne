@@ -19,9 +19,9 @@ setwd("/home/dargwind/Modelado de Nicho/curso_modelado/wd")
 csv_file <- "cvenustus_compilado.csv"
 
 # Nombres de columnas
-lat_col <- "lat"
-long_col <- "long"
-sp_col <- "sp"
+lat_col <- "latitude"
+long_col <- "longitude"
+sp_col <- "scientific_name"
 
 ## 3. Leer el archivo de ocurrencias ----
 occs_crudas <- read.csv(csv_file)
