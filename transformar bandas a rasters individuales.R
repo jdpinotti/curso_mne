@@ -1,27 +1,27 @@
 library(terra)
 
 # Ruta del archivo multibanda
-tif_path <- "/media/dargwind/Elements/CHELSA_ts/bioclima/bios_2018.tif"
+tif_path <- "/home/dargwind/Modelado de Nicho/curso_modelado/wd/mapas_exportados/predicciones_individuales_continuas.tif"
 
 # Cargar el archivo multibanda
 multibanda <- rast(tif_path)
 
-# Ruta del directorio de salida (asegúrate de que exista y termina con '/')
-output_dir <- "/media/dargwind/Elements/Tmatacus_tenm/2018/"
+# Ruta del directorio de salida
+output_dir <- "/home/dargwind/Modelado de Nicho/curso_modelado/wd/mapas_exportados/"
 if (!dir.exists(output_dir)) {
   dir.create(output_dir, recursive = TRUE)
 }
 
-# Obtener el número de bandas
-num_bandas <- nlyr(multibanda)
+# Obtener nombres de las bandas
+nombres_bandas <- names(multibanda)
 
-# Crear un bucle para exportar cada banda
-for (i in 1:num_bandas) {
+# Crear un bucle para exportar cada banda con su nombre original
+for (i in 1:nlyr(multibanda)) {
   # Extraer la banda
   banda <- multibanda[[i]]
   
-  # Crear el nombre del archivo (bio01.tif, bio02.tif, etc.)
-  nombre_banda <- paste0(output_dir, "bio", sprintf("%02d", i), ".tif")
+  # Usar el nombre original de la banda
+  nombre_banda <- paste0(output_dir, nombres_bandas[i], ".tif")
   
   # Exportar la banda como un archivo raster
   writeRaster(banda, filename = nombre_banda, overwrite = TRUE)
@@ -29,3 +29,4 @@ for (i in 1:num_bandas) {
   # Mensaje para confirmar la exportación
   cat("Exportado:", nombre_banda, "\n")
 }
+
