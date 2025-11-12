@@ -4,20 +4,18 @@ library(terra)
 rutas <- list.files("mapas_exportados/para_consenso/", pattern = "\\.tif$", full.names = TRUE)
 modelos <- rast(rutas)
 
-# Ver nombres
+# 2. Revisar nombres
 names(modelos)
 
-
-umbral <- 0.025
+# 3. Binarizar (mismo umbral para todos)
+umbral <- 0.25
 modelos_bin <- modelos > umbral
 
-#Para umbrales distintos para cada modelo
-#umbrales <- c(0.45, 0.51, 0.47, 0.53) # uno por cada modelo
-#modelos_bin <- modelos
-#for (i in 1:nlyr(modelos)) {
-#  modelos_bin[[i]] <- modelos[[i]] > umbrales[i]
-#}
+# 4. Sumar los modelos binarios ignorando NA
+ensamble <- sum(modelos_bin, na.rm = TRUE)
 
-ensamble <- sum(modelos_bin)
+# 5. Exportar resultado
 writeRaster(ensamble, "ensamble_suma.tif", overwrite = TRUE)
 
+# 6. Ver rango esperado
+range(values(ensamble), na.rm = TRUE)
