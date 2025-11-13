@@ -1,101 +1,81 @@
 ##############################################
-#  Script: 08_ensamble_simple_desde_rds.r
+#  Script: 08_ensamble_simple_desde_tif_y_rds.r
 #  Curso: Modelado de Nicho y Distribución
+#  Autor: Juan Diego Pinotti
 ##############################################
 
 # ---- 1. Librerías ----
 library(terra)
 library(dplyr)
-library(biomod2)
 
 # ---- 2. Configuración ----
 setwd("/home/dargwind/Modelado de Nicho/curso_modelado/wd")
 
-# Carpeta de salida
-dir.create("mapas_exportados/consenso", recursive = TRUE, showWarnings = FALSE)
+# Directorios
+dir_in <- "mapas_exportados/para_consenso/" #colocar los tif de los modelos que quiero ensamblar en esta carpeta
+dir_out <- "mapas_exportados/consenso/"
+dir_rds <- "modelos_rds/"
+dir.create(dir_out, recursive = TRUE, showWarnings = FALSE)
 
-# ---- 3. Cargar los objetos necesarios ----
-# Asegúrate de tener estos archivos generados por scripts anteriores:
-# - modelos_rds/biomod_modelos.rds (modelos ajustados)
-# - modelos_rds/biomod_proyeccion_current.rds (proyecciones)
-# Si usás otra especie, cambiale el nombre de carpeta o archivo.
+# ---- 3. Cargar archivos ----
+# Rasters continuos (uno por modelo)
+rutas <- list.files(dir_in, pattern = "\\.tif$", full.names = TRUE)
+modelos <- rast(rutas)
+cat("✓ Modelos cargados:", nlyr(modelos), "bandas\n")
 
-myBiomodModelOut <- readRDS("modelos_rds/biomod_modelos.rds")
-myBiomodProjection <- readRDS("modelos_rds/biomod_proyeccion_current.rds")
+# Evaluaciones biomod (umbrales TSS)
+evals <- readRDS(file.path(dir_rds, "evaluaciones_modelos.rds"))
 
-cat("✓ Objetos cargados correctamente.\n")
+# ---- 4. Seleccionar algoritmos de interés ----
+# Cambiá esta línea según tus modelos disponibles
+algoritmos_usar <- c("RF", "GLM", "GAM", "GBM")
 
-# ---- 4. Obtener predicciones continuas ----
-predicciones <- get_predictions(myBiomodProjection)
-names(predicciones)
-
-# ---- 5. Seleccionar algoritmos de interés ----
-# Cambiá esta línea según tus modelos disponibles:
-# Ejemplo: c("RF", "GLM"), o c("RF", "GAM", "GBM"), etc.
-algoritmos_usar <- c("RF", "GLM")
-
-# Filtrar solo los modelos de esos algoritmos
-modelos_sel <- predicciones[[grep(paste(algoritmos_usar, collapse = "|"), names(predicciones))]]
-
-cat("Modelos seleccionados:\n")
-print(names(modelos_sel))
-
-# ---- 6. Obtener los umbrales TSS desde las evaluaciones ----
-evals <- get_evaluations(myBiomodModelOut)
-
-# Convertir la lista compleja a un data.frame utilizable
-umbrales_TSS <- as.data.frame.table(evals["TSS", "Cutoff", , , , drop = FALSE]) %>%
-  rename(algo = Var4, umbral = Freq) %>%
+# ---- 5. Extraer umbrales TSS por algoritmo ----
+umbrales_TSS <- evals %>%
+  filter(metric.eval == "TSS") %>%
+  select(algo, cutoff) %>%
   group_by(algo) %>%
-  summarise(umbral = mean(umbral, na.rm = TRUE))
+  summarise(umbral = mean(cutoff, na.rm = TRUE))
 
-cat("\nUmbrales promedio TSS por algoritmo:\n")
+cat("\nUmbrales promedio TSS:\n")
 print(umbrales_TSS)
 
-# ---- 7. Binarizar los modelos seleccionados ----
+# ---- 6. Binarizar modelos ----
 modelos_bin <- list()
 
-for (i in 1:nlyr(modelos_sel)) {
-  modelo_nombre <- names(modelos_sel)[i]
+for (i in 1:nlyr(modelos)) {
+  modelo_nombre <- names(modelos)[i]
   
-  # Buscar qué algoritmo corresponde (ej. RF, GLM, etc.)
+  # Detectar algoritmo dentro del nombre del raster
   algo_encontrado <- NA
   for (a in algoritmos_usar) {
-    if (grepl(a, modelo_nombre)) {
+    if (grepl(a, modelo_nombre, ignore.case = TRUE)) {
       algo_encontrado <- a
       break
     }
   }
   
-  if (is.na(algo_encontrado)) next
+  if (is.na(algo_encontrado)) next  # omitir si no pertenece
   
   umbral <- umbrales_TSS$umbral[umbrales_TSS$algo == algo_encontrado]
   
-  # Binarizar: 1 = hábitat adecuado, 0 = no adecuado
-  bin <- modelos_sel[[i]] >= umbral
+  # Binarizar
+  bin <- modelos[[i]] >= umbral
   modelos_bin[[modelo_nombre]] <- bin
   
-  # Exportar binario individual
+  # Exportar binario
   writeRaster(bin,
-              filename = paste0("mapas_exportados/consenso/", modelo_nombre, "_TSSbin.tif"),
+              filename = paste0(dir_out, modelo_nombre, "_TSSbin.tif"),
               overwrite = TRUE)
   
-  cat("✅ Binarizado y exportado:", modelo_nombre, " | Umbral =", round(umbral, 3), "\n")
+  cat("✅", modelo_nombre, "binarizado (", algo_encontrado, ", umbral =", round(umbral, 3), ")\n")
 }
 
-# ---- 8. Crear el ensamble (suma de binarios) ----
+# ---- 7. Crear ensamble ----
 ensamble <- sum(rast(modelos_bin), na.rm = TRUE)
 
-# Exportar el ensamble final
-writeRaster(ensamble, "mapas_exportados/consenso/ENSAMBLE_suma_RF_GLM.tif", overwrite = TRUE)
-cat("\n🎯 Ensamble final exportado: 'ENSAMBLE_suma_RF_GLM.tif'\n")
+# Exportar ensamble final
+nombre_ensamble <- paste0("ENSAMBLE_suma_", paste(algoritmos_usar, collapse = "_"), ".tif")
+writeRaster(ensamble, paste0(dir_out, nombre_ensamble), overwrite = TRUE)
 
-# ---- 9. Verificar el rango de valores ----
-cat("\nRango del ensamble (esperado: 0 a", length(modelos_bin), "):\n")
-print(range(values(ensamble), na.rm = TRUE))
-
-# ---- 10. Visualizar ----
-plot(ensamble, main = "Ensamble simple (suma binaria)")
-
-
-#Despues cargar los mapas binarios en QGIS y sumarlos con calculadora raster
+cat("\n🎯 Ensamble final exportado:", nombre_ensamble, "\n")
