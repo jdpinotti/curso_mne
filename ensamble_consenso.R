@@ -57,6 +57,7 @@ for (i in 1:nlyr(modelos)) {
   
   if (is.na(algo_encontrado)) next  # omitir si no pertenece
   
+  #Si quiero puedo hacer un vector con los umbrales que elija (por ej. umbral <- c(0.05, 0.25, 0.32, 0.25))
   umbral <- umbrales_TSS$umbral[umbrales_TSS$algo == algo_encontrado]
   
   # Binarizar
