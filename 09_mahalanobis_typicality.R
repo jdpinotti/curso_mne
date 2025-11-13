@@ -24,13 +24,13 @@ pres <- read.csv("cvenustus_clean_thin1.csv")
 colnames(pres) <- c("species", "lon", "lat")
 
 # Capas ambientales
-ruta_capas <- "capas_chelsa"
 env_files <- list.files(
   ruta_capas,
-  pattern = "bio(6|17|4|7)\\.tif$",
+  pattern = "CHELSA_bio(6|17|4|7).*\\.tif$",
   full.names = TRUE
 )
 
+env_files
 # Cargar como raster stack de terra
 env <- rast(env_files)
 names(env) <- sub(".*bio(\\d+).*", "bio\\1", names(env))
@@ -108,16 +108,6 @@ typicality_raster <- app(env, function(x) {
 
 names(typicality_raster) <- "typicality"
 
-# ---- 8. Crear raster de idoneidad (transformación exponencial) ----
-
-suitability_raster <- app(env, function(x) {
-  env_mat <- matrix(x, ncol = nlyr(env))
-  dists <- mahalanobis(env_mat, center = centroid, cov = cov_matrix)
-  exp(-0.5 * dists)
-})
-
-names(suitability_raster) <- "suitability"
-
 # ---- 9. Exportar resultados ----
 # Crear carpeta de salida
 dir.create("resultados_mahalanobis", showWarnings = FALSE)
@@ -169,5 +159,3 @@ hist(pres_full$typicality,
      main = "Distribución de Tipicidad en Presencias",
      xlab = "Tipicidad", 
      col = "steelblue")
-
-cat("\n=== ANÁLISIS COMPLETADO ===\n")
